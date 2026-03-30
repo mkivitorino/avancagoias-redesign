@@ -3,6 +3,7 @@ import { ThumbsUp, ThumbsDown, Share2, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ShareButton from "@/components/ShareButton";
 import { trpc } from "@/lib/trpc";
 
 const AXES = [
@@ -224,10 +225,13 @@ export default function Ideas() {
                         <ThumbsDown size={18} className="text-red-600" />
                         <span className="font-bold">{idea.votes_down}</span>
                       </button>
-                      <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors ml-auto">
-                        <Share2 size={18} />
-                        <span>Compartilhar</span>
-                      </button>
+                      <ShareButton
+                        ideaTitle={idea.title}
+                        ideaDescription={idea.description}
+                        ideaId={idea.id}
+                        authorName={idea.author_name}
+                        className="ml-auto"
+                      />
                     </div>
 
                     {/* Footer with Author Info */}
