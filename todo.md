@@ -52,6 +52,12 @@
 - [x] Testar responsividade mobile
 - [x] Testar formulário em /escuta (estrutura pronta)
 - [x] Validar que todas as 145 ideias são acessíveis (estrutura pronta para integração)
+- [x] Extrair 111 ideias reais do arquivo seed-ideas-with-users.mjs do site original
+- [x] Integrar 111 ideias reais no serviço RealIdeasService
+- [x] Criar testes para validar 111 ideias com paginação correta (12 páginas × 10 ideias)
+- [x] Validar filtros por eixo temático com dados reais
+- [x] Validar busca de texto com dados reais
+- [x] Testar votação com dados reais (111 ideias com votos autênticos)
 - [x] Testar em diferentes navegadores (design responsivo validado)
 
 ## Fase 8: Finalização
