@@ -98,10 +98,10 @@ export default function Home() {
                   todos os goianos.
                 </p>
                 <div className="flex gap-4 flex-wrap">
-                  <Link href="/ideias">
+                  <Link href="/enviar-ideia">
                     <a>
                       <Button variant="secondary" size="lg" className="font-bold">
-                        Ver Ideias
+                        Enviar Ideia
                         <ArrowRight size={20} />
                       </Button>
                     </a>

@@ -76,3 +76,9 @@
 - [x] Testar compartilhamento em cada rede social
 - [x] Criar testes unitários para funcionalidade de compartilhamento
 - [x] Validar que URLs de compartilhamento estão corretas
+
+
+## Fase 10: Ajustes na Hero Section
+- [x] Trocar botão hero de "Ver Ideias" para "Enviar Ideia"
+- [x] Testar navegação do novo botão
+- [x] Validar no navegador
