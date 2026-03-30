@@ -89,3 +89,9 @@
 - [x] Atualizar RealIdeasService com valores corretos
 - [x] Corrigir formatação de datas (usar data original em vez de "Invalid Date")
 - [x] Testar dados corrigidos no navegador
+
+
+## Fase 12: Correção de Erro de Tags Aninhadas
+- [x] Identificar tags <a> aninhadas na página Home
+- [x] Corrigir estrutura HTML (remover <a> dentro de <Link>)
+- [x] Testar no navegador

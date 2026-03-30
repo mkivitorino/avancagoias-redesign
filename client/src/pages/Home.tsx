@@ -99,12 +99,10 @@ export default function Home() {
                 </p>
                 <div className="flex gap-4 flex-wrap">
                   <Link href="/enviar-ideia">
-                    <a>
-                      <Button variant="secondary" size="lg" className="font-bold">
-                        Enviar Ideia
-                        <ArrowRight size={20} />
-                      </Button>
-                    </a>
+                    <Button variant="secondary" size="lg" className="font-bold">
+                      Enviar Ideia
+                      <ArrowRight size={20} />
+                    </Button>
                   </Link>
                   {!isAuthenticated && (
                     <Button
@@ -218,15 +216,13 @@ export default function Home() {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {axes.map((axis) => (
-                <Link key={axis.id} href={`/ideias`}>
-                  <a className="block">
-                    <div
-                      className={`${axis.color} text-white p-6 rounded-lg hover:shadow-lg transition-shadow cursor-pointer`}
-                    >
-                      <h3 className="font-bold text-lg mb-2">{axis.name}</h3>
-                      <p className="text-sm opacity-90">{axis.description}</p>
-                    </div>
-                  </a>
+                <Link key={axis.id} href={`/ideias`} className="block">
+                  <div
+                    className={`${axis.color} text-white p-6 rounded-lg hover:shadow-lg transition-shadow cursor-pointer`}
+                  >
+                    <h3 className="font-bold text-lg mb-2">{axis.name}</h3>
+                    <p className="text-sm opacity-90">{axis.description}</p>
+                  </div>
                 </Link>
               ))}
             </div>
