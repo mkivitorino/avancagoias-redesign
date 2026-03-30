@@ -1,122 +1,9 @@
 import { useState, useMemo } from "react";
-import { ThumbsUp, ThumbsDown, Share2, Search } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Share2, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-
-// Dados de exemplo - em produção viriam da API
-const MOCK_IDEAS = [
-  {
-    id: "1",
-    title: "Ferrovia Centro-Oeste",
-    description: "Articular junto ao governo federal a conclusão da Ferrovia Centro-Oeste para escoamento da produção goiana, reduzindo custos de transporte e emissões de carbono.",
-    axis: "Infraestrutura",
-    author_name: "Camila Correia",
-    city: "Abaíba",
-    date: "2026-02-06",
-    votes_up: 30,
-    votes_down: 0,
-  },
-  {
-    id: "2",
-    title: "Plano AGROGOIÁS...versão NOVO PLANO DA AGROCIDADANIA",
-    description: "Criar e Reformular ideias, iniciativas e projetos q possam dar sustentabilidade ao meio rural, dentro e fora da porteira.",
-    axis: "Interior e Agro",
-    author_name: "Zélia Soares",
-    city: "Goiânia",
-    date: "2026-03-19",
-    votes_up: 20,
-    votes_down: 0,
-  },
-  {
-    id: "3",
-    title: "Estruturação da Secretaria da Saúde com base no conceito de Saúde Única",
-    description: "Adotar na Sec. Saúde Modelo Tridimensional de Saúde Única (One Health), com a criação da Superintendência de Bem-Estar Animal.",
-    axis: "Saúde",
-    author_name: "Zélia Soares",
-    city: "Goiânia",
-    date: "2026-03-19",
-    votes_up: 10,
-    votes_down: 0,
-  },
-  {
-    id: "4",
-    title: "Cursos para jovens",
-    description: "Criação de novos programas de formação para jovens que buscam o primeiro emprego.",
-    axis: "Emprego e Renda",
-    author_name: "Gabriela Batista",
-    city: "Aragoiânia",
-    date: "2026-03-12",
-    votes_up: 10,
-    votes_down: 0,
-  },
-  {
-    id: "5",
-    title: "Nomeação do CR e Excedentes do CBM",
-    description: "O atual governo diz que a Segurança Pública é a melhor do BRASIL. No entanto, é perceptível o descaso e indignação de muitos.",
-    axis: "Segurança",
-    author_name: "Pedro Borges",
-    city: "São Luís de Montes Belos",
-    date: "2026-03-11",
-    votes_up: 10,
-    votes_down: 0,
-  },
-  {
-    id: "6",
-    title: "Cultura investimento",
-    description: "Precisa mais cultara e tbm oportunidade de emprego para pessoas jovens Itumbiara Goiás precisa de ajuda.",
-    axis: "Desenvolvimento de Goiás",
-    author_name: "Italo Perreira",
-    city: "Itumbiara",
-    date: "2026-03-05",
-    votes_up: 10,
-    votes_down: 0,
-  },
-  {
-    id: "7",
-    title: "Facilita agro",
-    description: "Ajudar o pequeno medio e grande produtor para que tenha facilidade de conseguir autorgas de irrigação.",
-    axis: "Interior e Agro",
-    author_name: "Helio Vaz",
-    city: "Edealina",
-    date: "2026-03-20",
-    votes_up: 0,
-    votes_down: 0,
-  },
-  {
-    id: "8",
-    title: "Curso de agronomia na UEG de Edeia",
-    description: "Utilizar a estrutura rural do município de Edeia para formar jovens.",
-    axis: "Educação",
-    author_name: "Helio Vaz",
-    city: "Edealina",
-    date: "2026-03-20",
-    votes_up: 0,
-    votes_down: 0,
-  },
-  {
-    id: "9",
-    title: "Precisa melhorar para pessoa que tem deficiência",
-    description: "Precisa melhorar para quem tem deficiência física visual ou cognitiva que nem consegue ir fazer uma consulta.",
-    axis: "Saúde",
-    author_name: "Celso João Antunes Cordeiro",
-    city: "Rianápolis",
-    date: "2026-03-15",
-    votes_up: 0,
-    votes_down: 0,
-  },
-  {
-    id: "10",
-    title: "Vai melhorar para todos que tem deficiência",
-    description: "Eu quero uma educação melhor para aqueles que tem deficiências física ou visual e também cognitivas.",
-    axis: "Educação",
-    author_name: "Celso João Antunes Cordeiro",
-    city: "Rianápolis",
-    date: "2026-03-15",
-    votes_up: 0,
-    votes_down: 0,
-  },
-];
+import { trpc } from "@/lib/trpc";
 
 const AXES = [
   "Todos",
@@ -158,21 +45,18 @@ export default function Ideas() {
   const [votes, setVotes] = useState<Vote>({});
   const itemsPerPage = 10;
 
-  // Filtrar ideias
-  const filteredIdeas = useMemo(() => {
-    return MOCK_IDEAS.filter((idea) => {
-      const matchesAxis = selectedAxis === "Todos" || idea.axis === selectedAxis;
-      const matchesSearch =
-        idea.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        idea.description.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesAxis && matchesSearch;
-    });
-  }, [selectedAxis, searchTerm]);
+  // Buscar ideias da API
+  const { data: ideasData, isLoading, error } = trpc.ideas.list.useQuery({
+    page: currentPage,
+    limit: itemsPerPage,
+    axis: selectedAxis === "Todos" ? undefined : selectedAxis,
+    search: searchTerm || undefined,
+  });
 
-  // Paginação
-  const totalPages = Math.ceil(filteredIdeas.length / itemsPerPage);
-  const startIdx = (currentPage - 1) * itemsPerPage;
-  const paginatedIdeas = filteredIdeas.slice(startIdx, startIdx + itemsPerPage);
+  const ideas = ideasData?.ideas || [];
+  const total = ideasData?.total || 0;
+  const hasMore = ideasData?.hasMore || false;
+  const totalPages = Math.ceil(total / itemsPerPage);
 
   const handlePrevious = () => {
     if (currentPage > 1) {
@@ -182,7 +66,7 @@ export default function Ideas() {
   };
 
   const handleNext = () => {
-    if (currentPage < totalPages) {
+    if (hasMore) {
       setCurrentPage(currentPage + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -198,6 +82,16 @@ export default function Ideas() {
     });
   };
 
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleFilterChange = (axis: string) => {
+    setSelectedAxis(axis);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Header />
@@ -210,7 +104,7 @@ export default function Ideas() {
               Confira as ideias enviadas pela população e vote nas que você mais gosta
             </h1>
             <p className="text-lg">
-              Total de ideias: <span className="font-bold">{MOCK_IDEAS.length}</span>
+              Total de ideias: <span className="font-bold">{total}</span>
             </p>
           </div>
         </section>
@@ -225,10 +119,7 @@ export default function Ideas() {
                 type="text"
                 placeholder="Buscar ideias por título ou descrição..."
                 value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1);
-                }}
+                onChange={(e) => handleSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-primary"
               />
             </div>
@@ -241,10 +132,7 @@ export default function Ideas() {
               {AXES.map((axis) => (
                 <button
                   key={axis}
-                  onClick={() => {
-                    setSelectedAxis(axis);
-                    setCurrentPage(1);
-                  }}
+                  onClick={() => handleFilterChange(axis)}
                   className={`px-4 py-2 rounded-full font-semibold transition-colors ${
                     selectedAxis === axis
                       ? "bg-primary text-white"
@@ -260,15 +148,32 @@ export default function Ideas() {
           {/* Results Info */}
           <div className="mb-8">
             <p className="text-sm text-gray-600">
-              Mostrando {startIdx + 1} a {Math.min(startIdx + itemsPerPage, filteredIdeas.length)} de{" "}
-              {filteredIdeas.length} ideias
+              Mostrando {ideas.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} a{" "}
+              {Math.min(currentPage * itemsPerPage, total)} de {total} ideias
             </p>
           </div>
 
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="animate-spin text-primary" size={32} />
+              <span className="ml-3 text-gray-600">Carregando ideias...</span>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+              <p className="text-red-800">
+                Erro ao carregar ideias. Por favor, tente novamente.
+              </p>
+            </div>
+          )}
+
           {/* Ideas Grid */}
-          {paginatedIdeas.length > 0 ? (
+          {!isLoading && ideas.length > 0 ? (
             <div className="grid gap-6 mb-12">
-              {paginatedIdeas.map((idea) => {
+              {ideas.map((idea) => {
                 const userVote = votes[idea.id];
                 return (
                   <div
@@ -338,16 +243,16 @@ export default function Ideas() {
                 );
               })}
             </div>
-          ) : (
+          ) : !isLoading && ideas.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-600 text-lg">
                 Nenhuma ideia encontrada. Tente ajustar seus filtros.
               </p>
             </div>
-          )}
+          ) : null}
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {!isLoading && totalPages > 1 && (
             <div className="flex items-center justify-between">
               <button
                 onClick={handlePrevious}
@@ -361,7 +266,7 @@ export default function Ideas() {
               </span>
               <button
                 onClick={handleNext}
-                disabled={currentPage === totalPages}
+                disabled={!hasMore}
                 className="px-6 py-2 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Próxima →

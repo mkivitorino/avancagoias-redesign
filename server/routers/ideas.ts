@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../_core/trpc";
-import { fetchExternalIdeas } from "../services/externalIdeasService";
+import { getIdeasPaginated } from "../services/realIdeasService";
 
 export const ideasRouter = router({
   /**
@@ -17,7 +17,7 @@ export const ideasRouter = router({
     )
     .query(async ({ input }) => {
       try {
-        const { ideas, total, page } = await fetchExternalIdeas(
+        const result = await getIdeasPaginated(
           input.page,
           input.limit,
           input.axis,
@@ -25,10 +25,9 @@ export const ideasRouter = router({
         );
 
         return {
-          ideas,
-          total,
-          page,
-          hasMore: (page * input.limit) < total,
+          ideas: result.ideas,
+          total: result.total,
+          hasMore: result.hasMore,
         };
       } catch (error) {
         console.error("[ideasRouter] Erro ao buscar ideias:", error);
