@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { getLoginUrl } from "@/const";
 
 interface FormData {
   title: string;
@@ -27,6 +29,7 @@ const axes = [
 ];
 
 export default function SubmitIdea() {
+  const { user, isAuthenticated, loading } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
@@ -36,6 +39,17 @@ export default function SubmitIdea() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Pré-preencher dados do usuário logado
+  useEffect(() => {
+    if (user && isAuthenticated) {
+      setFormData((prev) => ({
+        ...prev,
+        name: user.name || "",
+        email: user.email || "",
+      }));
+    }
+  }, [user, isAuthenticated]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -88,6 +102,44 @@ export default function SubmitIdea() {
       setIsSubmitting(false);
     }
   };
+
+  // Redirecionar para login se não autenticado
+  if (!loading && !isAuthenticated) {
+    return (
+      <div className="min-h-screen flex flex-col bg-white">
+        <Header />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-center max-w-md">
+            <h1 className="text-3xl font-bold text-primary mb-4">Acesso Restrito</h1>
+            <p className="text-gray-600 mb-6">
+              Para enviar uma ideia, você precisa estar logado. Faça login ou cadastre-se para continuar.
+            </p>
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={() => (window.location.href = getLoginUrl())}
+            >
+              Fazer Login
+            </Button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Mostrar loading
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-white">
+        <Header />
+        <main className="flex-grow flex items-center justify-center">
+          <p className="text-gray-600">Carregando...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -172,12 +224,15 @@ export default function SubmitIdea() {
               {/* Divider */}
               <div className="border-t-2 border-gray-200 pt-6">
                 <h3 className="text-lg font-bold text-primary mb-4">Seus Dados</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Seus dados de cadastro foram pré-preenchidos automaticamente. Você pode editá-los se necessário.
+                </p>
               </div>
 
               {/* Nome */}
               <div>
                 <label htmlFor="name" className="block text-sm font-bold text-primary mb-2">
-                  Seu Nome *
+                  Seu Nome
                 </label>
                 <input
                   type="text"
@@ -186,14 +241,14 @@ export default function SubmitIdea() {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Digite seu nome completo"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-yellow-400"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-yellow-400 bg-gray-50"
                 />
               </div>
 
               {/* Email */}
               <div>
                 <label htmlFor="email" className="block text-sm font-bold text-primary mb-2">
-                  Seu Email *
+                  Seu Email
                 </label>
                 <input
                   type="email"
@@ -202,7 +257,7 @@ export default function SubmitIdea() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="seu.email@exemplo.com"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-yellow-400"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-yellow-400 bg-gray-50"
                 />
               </div>
 
