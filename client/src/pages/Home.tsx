@@ -89,9 +89,6 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               {/* Left Content */}
               <div>
-                <div className="inline-block bg-secondary text-primary px-4 py-2 rounded-lg mb-6 font-bold">
-                  Plano de Governo Colaborativo
-                </div>
                 <h1 className="text-5xl md:text-6xl font-bold mb-6">
                   <span className="text-secondary">Goiás</span> Pode Mais
                 </h1>

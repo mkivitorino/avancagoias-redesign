@@ -7,21 +7,23 @@ export default function Footer() {
   return (
     <footer className="bg-primary text-white mt-16">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          {/* About Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-8">
+          {/* Logo and Description */}
           <div>
-            <h3 className="font-bold text-lg mb-4 text-secondary">
-              Goiás Pode Mais
-            </h3>
+            <img
+              src="https://d2xsxph8kpxj0f.cloudfront.net/310419663031401995/NGK4EhxCxiMqVsLqFwBT8y/Ativo21CORES_7f50b237.png"
+              alt="Goiás Pode Mais"
+              className="h-12 w-auto mb-4"
+            />
             <p className="text-sm text-gray-200">
-              Plano de Governo Colaborativo. Participe da construção do futuro
-              de Goiás.
+              Plataforma de participação cidadã para construção colaborativa do
+              plano de governo de Goiás.
             </p>
           </div>
 
-          {/* Quick Links */}
+          {/* Navigation Links */}
           <div>
-            <h4 className="font-bold mb-4">Links Rápidos</h4>
+            <h4 className="font-bold mb-4">Navegação</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/">
@@ -30,76 +32,43 @@ export default function Footer() {
                   </a>
                 </Link>
               </li>
-            </ul>
-          </div>
-
-          {/* Resources */}
-          <div>
-            <h4 className="font-bold mb-4">Recursos</h4>
-            <ul className="space-y-2 text-sm">
               <li>
-                <span className="text-gray-300">
-                  Mais informações em breve
-                </span>
+                <Link href="/ideias">
+                  <a className="hover:text-secondary transition-colors">
+                    Ideias Aprovadas
+                  </a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/enviar-ideia">
+                  <a className="hover:text-secondary transition-colors">
+                    Enviar Ideia
+                  </a>
+                </Link>
               </li>
             </ul>
           </div>
 
-          {/* Social Media */}
+          {/* Contact Section */}
           <div>
-            <h4 className="font-bold mb-4">Redes Sociais</h4>
-            <div className="flex gap-4">
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-secondary transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook size={20} />
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-secondary transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram size={20} />
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-secondary transition-colors"
-                aria-label="Twitter"
-              >
-                <Twitter size={20} />
-              </a>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-secondary transition-colors"
-                aria-label="LinkedIn"
-              >
-                <Linkedin size={20} />
-              </a>
-            </div>
+            <h4 className="font-bold mb-4">Contato</h4>
+            <p className="text-sm text-gray-200 mb-4">
+              Dúvidas ou sugestões? Entre em contato conosco.
+            </p>
+            <a
+              href="mailto:contato@avancagoias.com.br"
+              className="text-secondary hover:text-white transition-colors text-sm"
+            >
+              contato@avancagoias.com.br
+            </a>
           </div>
         </div>
 
         {/* Bottom Section */}
         <div className="border-t border-secondary/20 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-200">
-            <p>
-              &copy; {currentYear} Goiás Pode Mais. Todos os direitos
-              reservados.
-            </p>
-            <p className="mt-4 md:mt-0">
-              Desenvolvido com dedicação para Goiás
-            </p>
-          </div>
+          <p className="text-center text-sm text-gray-300">
+            &copy; {currentYear} Goiás Pode Mais. Todos os direitos reservados.
+          </p>
         </div>
       </div>
     </footer>

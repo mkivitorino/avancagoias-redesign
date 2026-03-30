@@ -32,6 +32,15 @@ export default function Header() {
           <Link href="/">
             <a className="hover:text-secondary transition-colors">Início</a>
           </Link>
+          <Link href="/sobre">
+            <a className="hover:text-secondary transition-colors">Sobre</a>
+          </Link>
+          <Link href="/ideias">
+            <a className="hover:text-secondary transition-colors">Ideias</a>
+          </Link>
+          <Link href="/estatisticas">
+            <a className="hover:text-secondary transition-colors">Estatísticas</a>
+          </Link>
         </nav>
 
         {/* Auth Buttons */}
