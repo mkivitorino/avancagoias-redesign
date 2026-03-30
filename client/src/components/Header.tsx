@@ -35,9 +35,13 @@ export default function Header() {
         <div className="hidden md:flex items-center gap-4">
           {isAuthenticated ? (
             <>
-              <Button variant="secondary" size="sm">
-                Enviar Ideia
-              </Button>
+              <Link href="/enviar-ideia">
+                <a>
+                  <Button variant="secondary" size="sm">
+                    Enviar Ideia
+                  </Button>
+                </a>
+              </Link>
               <Button variant="outline" size="sm" onClick={logout}>
                 Sair
               </Button>
@@ -78,9 +82,13 @@ export default function Header() {
             <div className="border-t border-secondary/20 pt-4 flex flex-col gap-2">
               {isAuthenticated ? (
                 <>
-                  <Button variant="secondary" size="sm" className="w-full">
-                    Enviar Ideia
-                  </Button>
+                  <Link href="/enviar-ideia">
+                    <a className="w-full" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="secondary" size="sm" className="w-full">
+                        Enviar Ideia
+                      </Button>
+                    </a>
+                  </Link>
                   <Button
                     variant="outline"
                     size="sm"
