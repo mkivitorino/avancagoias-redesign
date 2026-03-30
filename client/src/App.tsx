@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import Home from "@/pages/Home";
+import About from "@/pages/About";
 import Ideas from "@/pages/Ideas";
 import SubmitIdea from "@/pages/SubmitIdea";
 import { Route, Switch } from "wouter";
@@ -13,6 +14,7 @@ function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/sobre"} component={About} />
       <Route path={"/ideias"} component={Ideas} />
       <Route path={"/enviar-ideia"} component={SubmitIdea} />
       <Route path={"/404"} component={NotFound} />
