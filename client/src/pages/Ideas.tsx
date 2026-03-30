@@ -1,122 +1,104 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { ThumbsUp, ThumbsDown } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { trpc } from "@/lib/trpc";
+import { Loader2 } from "lucide-react";
 
-interface Idea {
-  id: number;
-  title: string;
-  description: string;
-  axis: string;
-  votes: { favor: number; contra: number };
-  userVote: "favor" | "contra" | null;
-}
-
-// Mock data - em produção, virá de uma API
-const mockIdeas: Idea[] = [
-  {
-    id: 1,
-    title: "Melhorar infraestrutura de escolas",
-    description:
-      "Investir em reformas e modernização das escolas públicas do estado.",
-    axis: "Educação",
-    votes: { favor: 234, contra: 12 },
-    userVote: null,
-  },
-  {
-    id: 2,
-    title: "Ampliar acesso a saúde mental",
-    description: "Criar centros de atendimento psicológico em todas as regiões.",
-    axis: "Saúde",
-    votes: { favor: 189, contra: 8 },
-    userVote: null,
-  },
-  {
-    id: 3,
-    title: "Aumentar segurança nas ruas",
-    description: "Implementar mais policiamento comunitário e câmeras.",
-    axis: "Segurança",
-    votes: { favor: 456, contra: 34 },
-    userVote: null,
-  },
-  {
-    id: 4,
-    title: "Programa de empreendedorismo",
-    description: "Apoiar pequenos negócios com crédito e capacitação.",
-    axis: "Emprego e Renda",
-    votes: { favor: 312, contra: 15 },
-    userVote: null,
-  },
-  {
-    id: 5,
-    title: "Recuperação de estradas rurais",
-    description: "Pavimentar e manter estradas do interior.",
-    axis: "Infraestrutura",
-    votes: { favor: 567, contra: 28 },
-    userVote: null,
-  },
-];
-
-const axes = [
-  "Educação",
-  "Saúde",
-  "Segurança",
+const AXES = [
+  "Todos",
+  "Desenvolvimento de Goiás",
   "Infraestrutura",
   "Emprego e Renda",
-  "Desenvolvimento",
   "Juventude e Cultura",
+  "Segurança",
+  "Educação",
   "Família",
   "Governo que Serve",
+  "Saúde",
   "Água e Saneamento",
   "Interior e Agro",
 ];
 
+const AXIS_COLORS: Record<string, string> = {
+  "Desenvolvimento de Goiás": "bg-green-600",
+  Infraestrutura: "bg-blue-600",
+  "Emprego e Renda": "bg-purple-600",
+  "Juventude e Cultura": "bg-pink-600",
+  Segurança: "bg-red-600",
+  Educação: "bg-yellow-600",
+  Família: "bg-orange-600",
+  "Governo que Serve": "bg-indigo-600",
+  Saúde: "bg-teal-600",
+  "Água e Saneamento": "bg-cyan-600",
+  "Interior e Agro": "bg-lime-600",
+};
+
+interface Vote {
+  [key: string]: "up" | "down" | null;
+}
+
 export default function Ideas() {
-  const [selectedAxis, setSelectedAxis] = useState<string | null>(null);
-  const [ideas, setIdeas] = useState<Idea[]>(mockIdeas);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [selectedAxis, setSelectedAxis] = useState("Todos");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [votes, setVotes] = useState<Vote>({});
 
-  // Filter ideas by axis
-  const filteredIdeas = useMemo(() => {
-    if (!selectedAxis) return ideas;
-    return ideas.filter((idea) => idea.axis === selectedAxis);
-  }, [ideas, selectedAxis]);
+  // Buscar ideias da API
+  const { data, isLoading, error } = trpc.ideas.list.useQuery({
+    page: currentPage,
+    limit: 10,
+    axis: selectedAxis !== "Todos" ? selectedAxis : undefined,
+    search: searchTerm || undefined,
+  });
 
-  // Paginate ideas
-  const totalPages = Math.ceil(filteredIdeas.length / itemsPerPage);
-  const paginatedIdeas = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return filteredIdeas.slice(start, start + itemsPerPage);
-  }, [filteredIdeas, currentPage]);
+  // Processar dados
+  const ideas = data?.ideas || [];
+  const hasMore = data?.hasMore || false;
+  const total = data?.total || 0;
 
-  const handleVote = (ideaId: number, voteType: "favor" | "contra") => {
-    setIdeas((prevIdeas) =>
-      prevIdeas.map((idea) => {
-        if (idea.id === ideaId) {
-          const newIdea = { ...idea };
-          if (idea.userVote === voteType) {
-            // Remove vote
-            newIdea.votes[voteType] = Math.max(0, newIdea.votes[voteType] - 1);
-            newIdea.userVote = null;
-          } else {
-            // Add or change vote
-            if (idea.userVote) {
-              newIdea.votes[idea.userVote] = Math.max(
-                0,
-                newIdea.votes[idea.userVote] - 1
-              );
-            }
-            newIdea.votes[voteType] += 1;
-            newIdea.userVote = voteType;
-          }
-          return newIdea;
-        }
-        return idea;
-      })
-    );
+  // Handlers
+  const handleVote = (ideaId: string, voteType: "up" | "down") => {
+    setVotes((prev) => {
+      const current = prev[ideaId];
+      if (current === voteType) {
+        // Remover voto se clicar novamente
+        return { ...prev, [ideaId]: null };
+      }
+      // Adicionar ou trocar voto
+      return { ...prev, [ideaId]: voteType };
+    });
   };
+
+  const handleAxisFilter = (axis: string) => {
+    setSelectedAxis(axis);
+    setCurrentPage(1);
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 bg-gray-50">
+          <div className="container mx-auto px-4 py-12">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+              <h2 className="text-xl font-bold text-red-700 mb-2">
+                Erro ao carregar ideias
+              </h2>
+              <p className="text-red-600">{error.message}</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -134,6 +116,19 @@ export default function Ideas() {
           </div>
         </section>
 
+        {/* Search Section */}
+        <section className="bg-gray-50 py-6 border-b border-gray-200">
+          <div className="container mx-auto px-4">
+            <input
+              type="text"
+              placeholder="Buscar ideias por título ou descrição..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        </section>
+
         {/* Filters Section */}
         <section className="bg-gray-50 py-8 border-b border-gray-200">
           <div className="container mx-auto px-4">
@@ -141,25 +136,17 @@ export default function Ideas() {
               Filtrar por Eixo Temático
             </h3>
             <div className="flex flex-wrap gap-3">
-              <Button
-                variant={selectedAxis === null ? "default" : "outline"}
-                size="sm"
-                onClick={() => {
-                  setSelectedAxis(null);
-                  setCurrentPage(1);
-                }}
-              >
-                Todos
-              </Button>
-              {axes.map((axis) => (
+              {AXES.map((axis) => (
                 <Button
                   key={axis}
                   variant={selectedAxis === axis ? "default" : "outline"}
                   size="sm"
-                  onClick={() => {
-                    setSelectedAxis(axis);
-                    setCurrentPage(1);
-                  }}
+                  onClick={() => handleAxisFilter(axis)}
+                  className={
+                    selectedAxis === axis
+                      ? "bg-primary text-white"
+                      : "bg-white text-gray-700 border-gray-300"
+                  }
                 >
                   {axis}
                 </Button>
@@ -171,71 +158,127 @@ export default function Ideas() {
         {/* Ideas List */}
         <section className="py-12">
           <div className="container mx-auto px-4">
-            {paginatedIdeas.length === 0 ? (
+            {/* Loading State */}
+            {isLoading && (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className="animate-spin text-primary mr-2" size={24} />
+                <span className="text-gray-600">Carregando ideias...</span>
+              </div>
+            )}
+
+            {/* Ideas Grid */}
+            {!isLoading && ideas.length > 0 && (
+              <>
+                <div className="mb-6 text-sm text-gray-600">
+                  Mostrando {(currentPage - 1) * 10 + 1} a{" "}
+                  {Math.min(currentPage * 10, total)} de {total} ideias
+                </div>
+
+                <div className="space-y-6">
+                  {ideas.map((idea) => {
+                    const userVote = votes[idea.id];
+                    const upCount = idea.votes_up;
+                    const downCount = idea.votes_down;
+
+                    return (
+                      <div
+                        key={idea.id}
+                        className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow"
+                      >
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                          <div className="flex-grow">
+                            {/* Axis Badge */}
+                            <div className="flex items-center gap-3 mb-2">
+                              <Badge
+                                className={`${
+                                  AXIS_COLORS[idea.axis] || "bg-gray-500"
+                                } text-white`}
+                              >
+                                {idea.axis}
+                              </Badge>
+                              {idea.approval_status && (
+                                <Badge className="bg-blue-600 text-white">
+                                  100% aprovação
+                                </Badge>
+                              )}
+                            </div>
+
+                            {/* Title */}
+                            <h3 className="text-xl font-bold text-primary mb-2">
+                              {idea.title}
+                            </h3>
+
+                            {/* Description */}
+                            <p className="text-gray-600 mb-3">
+                              {idea.description}
+                            </p>
+
+                            {/* Meta Info */}
+                            <div className="flex flex-wrap items-center text-sm text-gray-500 gap-3">
+                              <span className="font-semibold">
+                                {idea.author_name}
+                              </span>
+                              <span>•</span>
+                              <span>{idea.city}</span>
+                              <span>•</span>
+                              <span>
+                                {new Date(idea.date).toLocaleDateString(
+                                  "pt-BR"
+                                )}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Voting Section */}
+                          <div className="flex gap-2 md:flex-col items-center md:items-end">
+                            <Button
+                              variant={
+                                userVote === "up" ? "default" : "outline"
+                              }
+                              size="sm"
+                              onClick={() => handleVote(idea.id, "up")}
+                              className={
+                                userVote === "up"
+                                  ? "bg-yellow-400 text-gray-800 hover:bg-yellow-500"
+                                  : ""
+                              }
+                            >
+                              👍 {upCount}
+                            </Button>
+                            <Button
+                              variant={
+                                userVote === "down" ? "default" : "outline"
+                              }
+                              size="sm"
+                              onClick={() => handleVote(idea.id, "down")}
+                              className={
+                                userVote === "down"
+                                  ? "bg-red-400 text-white hover:bg-red-500"
+                                  : ""
+                              }
+                            >
+                              👎 {downCount}
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            {/* Empty State */}
+            {!isLoading && ideas.length === 0 && (
               <div className="text-center py-12">
                 <p className="text-gray-600 text-lg">
-                  Nenhuma ideia encontrada neste eixo.
+                  Nenhuma ideia encontrada. Tente ajustar seus filtros.
                 </p>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {paginatedIdeas.map((idea) => (
-                  <div
-                    key={idea.id}
-                    className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow"
-                  >
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                      <div className="flex-grow">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="inline-block bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">
-                            {idea.axis}
-                          </span>
-                        </div>
-                        <h3 className="text-xl font-bold text-primary mb-2">
-                          {idea.title}
-                        </h3>
-                        <p className="text-gray-600">{idea.description}</p>
-                      </div>
-
-                      {/* Voting Section */}
-                      <div className="flex gap-4 md:flex-col items-center md:items-end">
-                        <div className="flex gap-2">
-                          <Button
-                            variant={
-                              idea.userVote === "favor" ? "favor" : "outline"
-                            }
-                            size="sm"
-                            onClick={() => handleVote(idea.id, "favor")}
-                            className="flex items-center gap-2"
-                          >
-                            <ThumbsUp size={16} />
-                            <span className="font-bold">
-                              {idea.votes.favor}
-                            </span>
-                          </Button>
-                          <Button
-                            variant={
-                              idea.userVote === "contra" ? "contra" : "outline"
-                            }
-                            size="sm"
-                            onClick={() => handleVote(idea.id, "contra")}
-                            className="flex items-center gap-2"
-                          >
-                            <ThumbsDown size={16} />
-                            <span className="font-bold">
-                              {idea.votes.contra}
-                            </span>
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
               </div>
             )}
 
             {/* Pagination */}
-            {totalPages > 1 && (
+            {!isLoading && ideas.length > 0 && (
               <div className="flex justify-center items-center gap-4 mt-12">
                 <Button
                   variant="outline"
@@ -244,30 +287,19 @@ export default function Ideas() {
                   }
                   disabled={currentPage === 1}
                 >
-                  Anterior
+                  ← Anterior
                 </Button>
-                <div className="flex items-center gap-2">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => (
-                      <Button
-                        key={page}
-                        variant={currentPage === page ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setCurrentPage(page)}
-                      >
-                        {page}
-                      </Button>
-                    )
-                  )}
-                </div>
+
+                <span className="text-gray-600 font-medium">
+                  Página {currentPage} de {Math.ceil(total / 10)}
+                </span>
+
                 <Button
                   variant="outline"
-                  onClick={() =>
-                    setCurrentPage(Math.min(totalPages, currentPage + 1))
-                  }
-                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={!hasMore}
                 >
-                  Próxima
+                  Próxima →
                 </Button>
               </div>
             )}
