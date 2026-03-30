@@ -18,9 +18,12 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
         <Link href="/">
-          <a className="flex items-center gap-2 font-bold text-2xl hover:opacity-80 transition-opacity">
-            <span className="text-secondary">Goiás</span>
-            <span>Pode Mais</span>
+          <a className="flex items-center hover:opacity-80 transition-opacity">
+            <img
+              src="https://d2xsxph8kpxj0f.cloudfront.net/310419663031401995/NGK4EhxCxiMqVsLqFwBT8y/Ativo21CORES_7f50b237.png"
+              alt="Goiás Pode Mais"
+              className="h-12 md:h-14 w-auto"
+            />
           </a>
         </Link>
 
