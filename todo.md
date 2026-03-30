@@ -9,14 +9,14 @@
 - [x] Atualizar index.css com novas cores (azul #003D82, amarelo #FFD700, laranja #FF9900)
 - [x] Configurar Tailwind com nova paleta de cores
 - [x] Atualizar tipografia global
-- [ ] Testar estilos em componentes básicos
+- [x] Testar estilos em componentes básicos
 
 ## Fase 3: Componentes Base
 - [x] Redesenhar Header com novo estilo
 - [x] Redesenhar Footer com novo estilo
 - [x] Atualizar componentes de botão
-- [ ] Atualizar componentes de card
-- [ ] Atualizar componentes de badge/eixos
+- [x] Atualizar componentes de card
+- [x] Atualizar componentes de badge/eixos
 
 ## Fase 4: Página Home
 - [x] Implementar novo layout da página inicial
@@ -43,20 +43,20 @@
 - [ ] Validar sistema de notificações por email
 
 ## Fase 7: Testes e Validação
-- [ ] Testar navegação entre páginas
-- [ ] Testar sistema de votação (like, dislike, toggle)
-- [ ] Testar filtros por eixo
-- [ ] Testar paginação (próxima/anterior)
+- [x] Testar navegação entre páginas
+- [x] Testar sistema de votação (like, dislike, toggle)
+- [x] Testar filtros por eixo
+- [x] Testar paginação (próxima/anterior)
 - [ ] Testar login/logout com OAuth
 - [ ] Testar envio de ideias
-- [ ] Testar responsividade mobile
+- [x] Testar responsividade mobile
 - [ ] Testar formulário em /escuta
 - [ ] Validar que todas as 145 ideias são acessíveis
 - [ ] Testar em diferentes navegadores
 
 ## Fase 8: Finalização
-- [ ] Revisar design visual completo
-- [ ] Fazer ajustes finais de espaçamento e cores
-- [ ] Documentar arquivos modificados
-- [ ] Criar checkpoint para deploy
-- [ ] Preparar relatório final
+- [x] Revisar design visual completo
+- [x] Fazer ajustes finais de espaçamento e cores
+- [x] Documentar arquivos modificados
+- [x] Criar checkpoint para deploy
+- [x] Preparar relatório final
