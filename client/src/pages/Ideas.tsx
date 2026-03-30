@@ -241,7 +241,7 @@ export default function Ideas() {
                         <span>•</span>
                         <span>{idea.city}</span>
                       </div>
-                      <span>{new Date(idea.date).toLocaleDateString("pt-BR")}</span>
+                      <span>{idea.date}</span>
                     </div>
                   </div>
                 );

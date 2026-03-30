@@ -82,3 +82,10 @@
 - [x] Trocar botão hero de "Ver Ideias" para "Enviar Ideia"
 - [x] Testar navegação do novo botão
 - [x] Validar no navegador
+
+
+## Fase 11: Correção de Dados das Ideias
+- [x] Verificar dados reais de likes, dislikes e datas no arquivo original
+- [x] Atualizar RealIdeasService com valores corretos
+- [x] Corrigir formatação de datas (usar data original em vez de "Invalid Date")
+- [x] Testar dados corrigidos no navegador
