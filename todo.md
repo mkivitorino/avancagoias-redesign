@@ -102,3 +102,8 @@
 - [x] Mapear eixos reais vs eixos dos filtros
 - [x] Atualizar filtros para corresponder aos eixos reais (Home.tsx e Ideas.tsx)
 - [x] Testar que cada filtro retorna ideias corretas (Desenvolvimento Econômico: 13 ideias, Agricultura: 8 ideias)
+
+
+## Fase 14: Atualização de Conteúdo Hero
+- [x] Atualizar texto da seção hero na página Home
+- [x] Testar no navegador

@@ -93,9 +93,7 @@ export default function Home() {
                   <span className="text-secondary">Goiás</span> Pode Mais
                 </h1>
                 <p className="text-lg text-gray-100 mb-8 leading-relaxed">
-                  Participe da construção do futuro de Goiás. Envie suas ideias
-                  e contribua para um plano de governo que representa a voz de
-                  todos os goianos.
+                  O Goiás do futuro começa nas ideias da juventude. Não adie para depois e deixe sua marca no plano que vai definir os próximos anos no nosso estado.
                 </p>
                 <div className="flex gap-4 flex-wrap">
                   <Link href="/enviar-ideia">
