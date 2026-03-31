@@ -55,17 +55,17 @@ export const ideasRouter = router({
    */
   getAxes: publicProcedure.query(() => {
     return [
-      "Desenvolvimento de Goiás",
+      "Desenvolvimento Econômico",
       "Infraestrutura",
       "Emprego e Renda",
-      "Juventude e Cultura",
-      "Segurança",
       "Educação",
-      "Família",
-      "Governo que Serve",
       "Saúde",
-      "Água e Saneamento",
+      "Segurança",
+      "Juventude",
+      "Cultura e Lazer",
+      "Agricultura",
       "Interior e Agro",
+      "Meio Ambiente",
     ];
   }),
 });

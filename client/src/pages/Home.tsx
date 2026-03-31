@@ -12,87 +12,87 @@ export default function Home() {
   const axes = [
     {
       id: 1,
-      name: "Educação",
-      description: "Escolas, valorização do professor e qualidade do ensino",
-      color: "bg-blue-600",
+      name: "Desenvolvimento Econômico",
+      description: "Visão estratégica para crescimento econômico",
+      color: "bg-orange-600",
     },
     {
       id: 2,
-      name: "Saúde",
-      description: "Hospitais, atendimento médico e saúde mental",
-      color: "bg-blue-700",
-    },
-    {
-      id: 3,
-      name: "Segurança",
-      description: "Política de segurança pública e proteção da população",
-      color: "bg-blue-800",
-    },
-    {
-      id: 4,
       name: "Infraestrutura",
       description: "Estradas, pontes, obras estruturantes e mobilidade",
       color: "bg-blue-900",
     },
     {
-      id: 5,
+      id: 3,
       name: "Emprego e Renda",
       description: "Geração de empregos, qualificação profissional",
       color: "bg-orange-500",
     },
     {
+      id: 4,
+      name: "Educação",
+      description: "Escolas, valorização do professor e qualidade do ensino",
+      color: "bg-blue-600",
+    },
+    {
+      id: 5,
+      name: "Saúde",
+      description: "Hospitais, atendimento médico e saúde mental",
+      color: "bg-blue-700",
+    },
+    {
       id: 6,
-      name: "Desenvolvimento",
-      description: "Visão estratégica para crescimento econômico",
-      color: "bg-orange-600",
+      name: "Segurança",
+      description: "Política de segurança pública e proteção da população",
+      color: "bg-blue-800",
     },
     {
       id: 7,
-      name: "Juventude e Cultura",
-      description: "Educação superior, economia criativa",
+      name: "Juventude",
+      description: "Educação superior, esportes e desenvolvimento",
       color: "bg-yellow-500",
     },
     {
       id: 8,
-      name: "Família",
-      description: "Programas sociais, cuidado com as pessoas",
+      name: "Cultura e Lazer",
+      description: "Economia criativa, artes e entretenimento",
       color: "bg-yellow-600",
     },
     {
       id: 9,
-      name: "Governo que Serve",
-      description: "Atendimento ao cidadão, transparência",
+      name: "Agricultura",
+      description: "Desenvolvimento rural e apoio ao agronegócio",
       color: "bg-green-600",
     },
     {
       id: 10,
-      name: "Água e Saneamento",
-      description: "Abastecimento de água e tratamento de esgoto",
-      color: "bg-cyan-600",
+      name: "Interior e Agro",
+      description: "Desenvolvimento regional e tecnologia agrícola",
+      color: "bg-green-700",
     },
     {
       id: 11,
-      name: "Interior e Agro",
-      description: "Desenvolvimento regional e apoio ao agronegócio",
-      color: "bg-green-700",
+      name: "Meio Ambiente",
+      description: "Sustentabilidade, energia limpa e conservação",
+      color: "bg-cyan-600",
     },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <Header />
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-r from-primary to-blue-800 text-white py-20 overflow-hidden">
+        <section className="relative bg-gradient-to-b from-primary to-primary/80 text-white py-20 overflow-hidden">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              {/* Left Content */}
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              {/* Left - Content */}
               <div>
                 <h1 className="text-5xl md:text-6xl font-bold mb-6">
                   <span className="text-secondary">Goiás</span> Pode Mais
                 </h1>
-                <p className="text-lg mb-8 text-gray-100">
+                <p className="text-lg text-gray-100 mb-8 leading-relaxed">
                   Participe da construção do futuro de Goiás. Envie suas ideias
                   e contribua para um plano de governo que representa a voz de
                   todos os goianos.
@@ -143,7 +143,7 @@ export default function Home() {
                 <p className="text-gray-600">Eixos Temáticos</p>
               </div>
               <div className="p-6">
-                <div className="text-4xl font-bold text-accent mb-2">169</div>
+                <div className="text-4xl font-bold text-accent mb-2">111</div>
                 <p className="text-gray-600">Ideias</p>
               </div>
               <div className="p-6">
@@ -181,20 +181,16 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="text-center p-6 bg-gray-50 rounded-lg">
-                  <div className="text-3xl mb-4 text-accent">✓</div>
-                  <h3 className="font-bold text-primary mb-2">
-                    Ideias Avaliadas
-                  </h3>
+                  <div className="text-3xl mb-4 text-secondary">✓</div>
+                  <h3 className="font-bold text-primary mb-2">Ideias Avaliadas</h3>
                   <p className="text-gray-600 text-sm">
                     Todas as ideias são analisadas pela equipe e as aprovadas
                     ficam visíveis para todos.
                   </p>
                 </div>
                 <div className="text-center p-6 bg-gray-50 rounded-lg">
-                  <div className="text-3xl mb-4 text-primary">🎯</div>
-                  <h3 className="font-bold text-primary mb-2">
-                    Plano Colaborativo
-                  </h3>
+                  <div className="text-3xl mb-4 text-secondary">🎯</div>
+                  <h3 className="font-bold text-primary mb-2">Plano Colaborativo</h3>
                   <p className="text-gray-600 text-sm">
                     As melhores ideias serão incorporadas ao plano de governo
                     de Goiás.

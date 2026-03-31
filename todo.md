@@ -95,3 +95,10 @@
 - [x] Identificar tags <a> aninhadas na página Home
 - [x] Corrigir estrutura HTML (remover <a> dentro de <Link>)
 - [x] Testar no navegador
+
+
+## Fase 13: Alinhamento de Eixos Temáticos
+- [x] Identificar todos os eixos temáticos reais nas 111 ideias (11 eixos encontrados)
+- [x] Mapear eixos reais vs eixos dos filtros
+- [x] Atualizar filtros para corresponder aos eixos reais (Home.tsx e Ideas.tsx)
+- [x] Testar que cada filtro retorna ideias corretas (Desenvolvimento Econômico: 13 ideias, Agricultura: 8 ideias)

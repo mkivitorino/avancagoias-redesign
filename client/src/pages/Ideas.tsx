@@ -8,31 +8,31 @@ import { trpc } from "@/lib/trpc";
 
 const AXES = [
   "Todos",
-  "Desenvolvimento de Goiás",
+  "Desenvolvimento Econômico",
   "Infraestrutura",
   "Emprego e Renda",
-  "Juventude e Cultura",
-  "Segurança",
   "Educação",
-  "Família",
-  "Governo que Serve",
   "Saúde",
-  "Água e Saneamento",
+  "Segurança",
+  "Juventude",
+  "Cultura e Lazer",
+  "Agricultura",
   "Interior e Agro",
+  "Meio Ambiente",
 ];
 
 const AXIS_COLORS: Record<string, string> = {
-  "Infraestrutura": "bg-green-500",
-  "Interior e Agro": "bg-green-600",
-  "Saúde": "bg-blue-600",
-  "Emprego e Renda": "bg-purple-600",
-  "Segurança": "bg-red-600",
-  "Desenvolvimento de Goiás": "bg-orange-600",
-  "Educação": "bg-blue-500",
-  "Juventude e Cultura": "bg-pink-600",
-  "Família": "bg-red-500",
-  "Governo que Serve": "bg-gray-600",
-  "Água e Saneamento": "bg-cyan-600",
+  "Desenvolvimento Econômico": "bg-orange-600",
+  "Infraestrutura": "bg-blue-900",
+  "Emprego e Renda": "bg-orange-500",
+  "Educação": "bg-blue-600",
+  "Saúde": "bg-blue-700",
+  "Segurança": "bg-blue-800",
+  "Juventude": "bg-yellow-500",
+  "Cultura e Lazer": "bg-yellow-600",
+  "Agricultura": "bg-green-600",
+  "Interior e Agro": "bg-green-700",
+  "Meio Ambiente": "bg-cyan-600",
 };
 
 interface Vote {
