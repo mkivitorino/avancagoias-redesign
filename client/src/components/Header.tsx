@@ -14,7 +14,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-primary text-white shadow-md">
+    <header className="text-white shadow-md fixed top-0 left-0 right-0 z-50" style={{ backgroundColor: "#001F4D" }}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
         <Link href="/">
@@ -81,7 +81,7 @@ export default function Header() {
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-primary border-t border-secondary/20">
+        <div className="md:hidden border-t border-white/20" style={{ backgroundColor: "#001F4D" }}>
           <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
             <Link href="/">
               <a
@@ -91,7 +91,31 @@ export default function Header() {
                 Início
               </a>
             </Link>
-            <div className="border-t border-secondary/20 pt-4 flex flex-col gap-2">
+            <Link href="/sobre">
+              <a
+                className="hover:text-secondary transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Sobre
+              </a>
+            </Link>
+            <Link href="/ideias">
+              <a
+                className="hover:text-secondary transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Ideias
+              </a>
+            </Link>
+            <Link href="/estatisticas">
+              <a
+                className="hover:text-secondary transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Estatísticas
+              </a>
+            </Link>
+            <div className="border-t border-white/20 pt-4 flex flex-col gap-2">
               {isAuthenticated ? (
                 <>
                   <Link href="/enviar-ideia">
