@@ -3,6 +3,7 @@ import { ThumbsUp, ThumbsDown, Search, Loader2, MapPin, TrendingUp, ChevronLeft,
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ShareButton from "@/components/ShareButton";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 
 const AXES = [
@@ -156,7 +157,13 @@ export default function Ideas() {
     }
   };
 
+  const { isAuthenticated } = useAuth();
+
   const handleVote = (idea: { id: string; votes_up: number; votes_down: number }, voteType: "up" | "down") => {
+    if (!isAuthenticated) {
+      window.location.href = "/login";
+      return;
+    }
     if (pendingVotes.has(idea.id)) return;
     const currentVote = votes[idea.id];
     const currentCounts = voteCounts[idea.id] || { up: idea.votes_up, down: idea.votes_down };
