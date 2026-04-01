@@ -204,8 +204,39 @@ const REAL_IDEAS: Idea[] = [
   { id: "60225", axis: "Desenvolvimento de Goiás", title: "Programa de Industrialização do Interior", description: "Implementar programa de incentivos para instalação de indústrias no interior do estado, descentralizando o desenvolvimento econômico e criando oportunidades em todas as regiões de Goiás.", author_name: "Manoel Teixeira", city: "Anguera", date: "06/02/2026", votes_up: 0, votes_down: 0 },
 ];
 
+import { eq } from "drizzle-orm";
+import { getDb } from "../db";
+import { submittedIdeas } from "../../drizzle/schema";
+
+async function getApprovedUserIdeas(): Promise<Idea[]> {
+  try {
+    const db = await getDb();
+    if (!db) return [];
+    const rows = await db.select().from(submittedIdeas).where(eq(submittedIdeas.status, "approved"));
+    return rows.map((r) => ({
+      id: `user-${r.id}`,
+      title: r.title,
+      description: r.description,
+      axis: r.axis,
+      author_name: r.authorName || "Anônimo",
+      city: r.authorCity || "",
+      date: r.createdAt ? new Date(r.createdAt).toLocaleDateString("pt-BR") : "",
+      votes_up: 0,
+      votes_down: 0,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+async function getAllIdeas(): Promise<Idea[]> {
+  const approved = await getApprovedUserIdeas();
+  return [...approved, ...REAL_IDEAS];
+}
+
 export async function getTopIdeas(limit: number = 4): Promise<Idea[]> {
-  const sorted = [...REAL_IDEAS].sort((a, b) => b.votes_up - a.votes_up);
+  const all = await getAllIdeas();
+  const sorted = all.sort((a, b) => b.votes_up - a.votes_up);
   return sorted.slice(0, limit);
 }
 
@@ -216,7 +247,8 @@ export async function getIdeasPaginated(
   search?: string
 ): Promise<IdeasResult> {
   try {
-    let filtered = [...REAL_IDEAS];
+    const all = await getAllIdeas();
+    let filtered = all;
     if (axis) {
       filtered = filtered.filter((idea) => idea.axis === axis);
     }
@@ -252,63 +284,37 @@ export interface StatsResult {
   citiesByIdeas: { city: string; count: number }[];
 }
 
-export function getStats(): StatsResult {
-  const totalIdeas = REAL_IDEAS.length;
+export async function getStats(): Promise<StatsResult> {
+  const all = await getAllIdeas();
 
-  // Participantes únicos por nome
-  const uniqueAuthors = new Set(REAL_IDEAS.map((i) => i.author_name));
+  const totalIdeas = all.length;
+  const uniqueAuthors = new Set(all.map((i) => i.author_name));
   const totalParticipants = uniqueAuthors.size;
-
-  // Total de votos
-  const totalVotes = REAL_IDEAS.reduce(
-    (sum, i) => sum + i.votes_up + i.votes_down,
-    0
-  );
-
-  // Cidades únicas
-  const uniqueCities = new Set(REAL_IDEAS.map((i) => i.city));
+  const totalVotes = all.reduce((sum, i) => sum + i.votes_up + i.votes_down, 0);
+  const uniqueCities = new Set(all.map((i) => i.city).filter(Boolean));
   const totalCities = uniqueCities.size;
 
-  // Ideias por eixo
   const axisMap: Record<string, number> = {};
-  for (const idea of REAL_IDEAS) {
+  for (const idea of all) {
     axisMap[idea.axis] = (axisMap[idea.axis] || 0) + 1;
   }
   const ideasByAxis = Object.entries(axisMap)
     .map(([axis, count]) => ({ axis, count }))
     .sort((a, b) => b.count - a.count);
 
-  // Top 5 ideias mais votadas
-  const topIdeas = [...REAL_IDEAS]
-    .sort(
-      (a, b) =>
-        b.votes_up + b.votes_down - (a.votes_up + a.votes_down)
-    )
+  const topIdeas = [...all]
+    .sort((a, b) => b.votes_up + b.votes_down - (a.votes_up + a.votes_down))
     .slice(0, 5)
-    .map((i) => ({
-      id: i.id,
-      title: i.title,
-      votes_up: i.votes_up,
-      votes_down: i.votes_down,
-    }));
+    .map((i) => ({ id: i.id, title: i.title, votes_up: i.votes_up, votes_down: i.votes_down }));
 
-  // Top 10 cidades com mais ideias
   const cityMap: Record<string, number> = {};
-  for (const idea of REAL_IDEAS) {
-    cityMap[idea.city] = (cityMap[idea.city] || 0) + 1;
+  for (const idea of all) {
+    if (idea.city) cityMap[idea.city] = (cityMap[idea.city] || 0) + 1;
   }
   const citiesByIdeas = Object.entries(cityMap)
     .map(([city, count]) => ({ city, count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 10);
 
-  return {
-    totalIdeas,
-    totalParticipants,
-    totalVotes,
-    totalCities,
-    ideasByAxis,
-    topIdeas,
-    citiesByIdeas,
-  };
+  return { totalIdeas, totalParticipants, totalVotes, totalCities, ideasByAxis, topIdeas, citiesByIdeas };
 }
