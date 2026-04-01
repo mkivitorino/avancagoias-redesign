@@ -27,6 +27,7 @@ export default function Login() {
   const [ageRange, setAgeRange] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,7 +131,12 @@ export default function Login() {
 
               <div>
                 <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Senha *</label>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} placeholder="Mínimo 6 caracteres" className={inputClass} />
+                <div className="relative">
+                  <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} placeholder="Mínimo 6 caracteres" className={inputClass + " pr-12"} />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-sm font-medium">
+                    {showPassword ? "Ocultar" : "Ver"}
+                  </button>
+                </div>
               </div>
 
               {isRegister && (
