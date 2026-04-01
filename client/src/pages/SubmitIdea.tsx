@@ -9,6 +9,7 @@ import {
   Lightbulb,
   User,
   Mail,
+  MapPin,
   Heading,
   Layers,
   Send,
@@ -24,6 +25,7 @@ interface FormData {
   axis: string;
   name: string;
   email: string;
+  city: string;
 }
 
 const AXES = [
@@ -88,6 +90,7 @@ export default function SubmitIdea() {
     axis: "",
     name: "",
     email: "",
+    city: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -111,7 +114,7 @@ export default function SubmitIdea() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title.trim() || !formData.description.trim() || !formData.axis || !formData.name.trim() || !formData.email.trim()) {
+    if (!formData.title.trim() || !formData.description.trim() || !formData.axis || !formData.name.trim() || !formData.email.trim() || !formData.city.trim()) {
       toast.error("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
@@ -122,6 +125,7 @@ export default function SubmitIdea() {
         title: formData.title,
         description: formData.description,
         authorName: formData.name || undefined,
+        authorCity: formData.city || undefined,
       });
       setSubmitted(true);
       toast.success("Sua ideia foi enviada com sucesso! Obrigado pela participação.");
@@ -140,6 +144,7 @@ export default function SubmitIdea() {
       axis: "",
       name: user?.name || "",
       email: user?.email || "",
+      city: "",
     });
     setSubmitted(false);
   };
@@ -563,6 +568,44 @@ export default function SubmitIdea() {
                       }}
                     />
                     <Mail
+                      size={16}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                      style={{ color: "#94A3B8" }}
+                    />
+                  </div>
+                </div>
+
+                {/* Cidade */}
+                <div>
+                  <label htmlFor="city" className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">
+                    Sua Cidade <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="city"
+                      name="city"
+                      type="text"
+                      value={formData.city}
+                      onChange={handleChange}
+                      placeholder="Ex: Goiânia"
+                      className="w-full pl-12 pr-4 py-3.5 rounded-xl transition-all"
+                      style={{
+                        border: "2px solid #E2E8F0",
+                        background: "#fff",
+                        outline: "none",
+                        fontFamily: "inherit",
+                        color: "#1e293b",
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = "#FFD700";
+                        e.target.style.boxShadow = "0 0 0 4px rgba(255,215,0,0.15)";
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = "#E2E8F0";
+                        e.target.style.boxShadow = "none";
+                      }}
+                    />
+                    <MapPin
                       size={16}
                       className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
                       style={{ color: "#94A3B8" }}

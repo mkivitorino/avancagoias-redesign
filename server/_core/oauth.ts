@@ -2,20 +2,18 @@ import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import bcrypt from "bcryptjs";
 import type { Express, Request, Response } from "express";
 import { nanoid } from "nanoid";
+import { eq } from "drizzle-orm";
+import { users } from "../../drizzle/schema";
 import * as db from "../db";
 import { getSessionCookieOptions } from "./cookies";
 import { sdk } from "./sdk";
 
 export function registerOAuthRoutes(app: Express) {
   app.post("/api/auth/register", async (req: Request, res: Response) => {
-    const { email, password, name } = req.body as {
-      email?: string;
-      password?: string;
-      name?: string;
-    };
+    const { email, password, name, gender, phone, livesInGoias, state, city, ageRange } = req.body as Record<string, string | undefined>;
 
     if (!email || !password || !name) {
-      res.status(400).json({ error: "email, password e name são obrigatórios" });
+      res.status(400).json({ error: "Email, senha e nome são obrigatórios" });
       return;
     }
 
@@ -37,12 +35,18 @@ export function registerOAuthRoutes(app: Express) {
         lastSignedIn: new Date(),
       });
 
-      // Set passwordHash directly via raw query since upsertUser doesn't handle it
+      // Set extra profile fields
       const dbInstance = await db.getDb();
       if (dbInstance) {
-        const { users } = await import("../../drizzle/schema");
-        const { eq } = await import("drizzle-orm");
-        await dbInstance.update(users).set({ passwordHash }).where(eq(users.openId, openId));
+        await dbInstance.update(users).set({
+          passwordHash,
+          gender: gender ?? null,
+          phone: phone ?? null,
+          livesInGoias: livesInGoias ?? null,
+          state: state ?? null,
+          city: city ?? null,
+          ageRange: ageRange ?? null,
+        }).where(eq(users.openId, openId));
       }
 
       const sessionToken = await sdk.createSessionToken(openId, {
@@ -60,13 +64,10 @@ export function registerOAuthRoutes(app: Express) {
   });
 
   app.post("/api/auth/login", async (req: Request, res: Response) => {
-    const { email, password } = req.body as {
-      email?: string;
-      password?: string;
-    };
+    const { email, password } = req.body as { email?: string; password?: string };
 
     if (!email || !password) {
-      res.status(400).json({ error: "email e password são obrigatórios" });
+      res.status(400).json({ error: "Email e senha são obrigatórios" });
       return;
     }
 
@@ -83,10 +84,7 @@ export function registerOAuthRoutes(app: Express) {
         return;
       }
 
-      await db.upsertUser({
-        openId: user.openId,
-        lastSignedIn: new Date(),
-      });
+      await db.upsertUser({ openId: user.openId, lastSignedIn: new Date() });
 
       const sessionToken = await sdk.createSessionToken(user.openId, {
         name: user.name || "",

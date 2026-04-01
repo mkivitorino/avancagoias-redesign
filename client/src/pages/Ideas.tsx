@@ -99,7 +99,9 @@ function getSessionId(): string {
 }
 
 export default function Ideas() {
-  const [selectedAxis, setSelectedAxis] = useState("Todos");
+  const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+  const initialAxis = urlParams?.get("eixo") || "Todos";
+  const [selectedAxis, setSelectedAxis] = useState(initialAxis);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [votes, setVotes] = useState<Vote>({});
@@ -116,7 +118,12 @@ export default function Ideas() {
     search: searchTerm || undefined,
   });
 
-  const ideas = ideasData?.ideas || [];
+  const rawIdeas = ideasData?.ideas || [];
+  const ideas = [...rawIdeas].sort((a, b) => {
+    if (sortOrder === "votes") return (b.votes_up - b.votes_down) - (a.votes_up - a.votes_down);
+    if (sortOrder === "oldest") return a.id.localeCompare(b.id);
+    return b.id.localeCompare(a.id); // recent = default
+  });
   const total = ideasData?.total || 0;
   const hasMore = ideasData?.hasMore || false;
   const totalPages = Math.ceil(total / itemsPerPage);

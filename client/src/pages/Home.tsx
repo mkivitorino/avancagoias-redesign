@@ -171,10 +171,10 @@ export default function Home() {
           <div className="container mx-auto px-4 relative z-10">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
-                <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight">
+                <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold mb-6 leading-tight">
                   <span style={{ color: '#FFD700' }}>Goiás</span> Pode Mais
                 </h1>
-                <p className="text-lg mb-8 leading-relaxed font-light" style={{ color: '#bfdbfe' }}>
+                <p className="text-xl md:text-2xl mb-8 leading-relaxed font-light" style={{ color: '#bfdbfe' }}>
                   O Goiás do futuro começa nas ideias da juventude. Não adie para depois e deixe sua marca no plano que vai definir os próximos anos no nosso estado.
                 </p>
                 <div className="flex gap-4 flex-wrap">
@@ -370,7 +370,7 @@ export default function Home() {
                   return (
                     <Link
                       key={axis.id}
-                      href="/ideias"
+                      href={`/ideias?eixo=${encodeURIComponent(axis.name)}`}
                       className="md:col-span-2 lg:col-span-2 flex items-center gap-4 p-6 rounded-2xl transition-all"
                       style={{
                         background: 'linear-gradient(to right, #ecfeff, #eff6ff)',
@@ -391,7 +391,7 @@ export default function Home() {
                 return (
                   <Link
                     key={axis.id}
-                    href="/ideias"
+                    href={`/ideias?eixo=${encodeURIComponent(axis.name)}`}
                     className="flex items-center gap-4 p-6 rounded-2xl group transition-all"
                     style={{
                       background: '#fff',
@@ -442,35 +442,6 @@ export default function Home() {
                 Enviar Sua Ideia
               </button>
             )}
-          </div>
-        </section>
-
-        {/* ── Newsletter Section ── */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <div
-              className="max-w-3xl mx-auto p-10 rounded-2xl text-left"
-              style={{ background: '#f9fafb', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-            >
-              <h3 className="text-2xl font-bold mb-3" style={{ color: '#001F4D' }}>Fique Atualizado</h3>
-              <p className="text-gray-600 mb-8 text-sm md:text-base">
-                Cadastre-se para receber nossa newsletter e acompanhar as novidades do Goiás Pode Mais.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <input
-                  type="email"
-                  placeholder="Digite seu e-mail"
-                  className="flex-grow px-5 py-3 rounded-md border border-gray-300 focus:outline-none text-gray-700"
-                  style={{ focusRingColor: '#FFD700' } as React.CSSProperties}
-                />
-                <button
-                  className="px-8 py-3 rounded-md font-bold transition-all"
-                  style={{ background: '#FFD700', color: '#001F4D', boxShadow: '0 4px 15px rgba(255,215,0,0.3)' }}
-                >
-                  Enviar
-                </button>
-              </div>
-            </div>
           </div>
         </section>
 
