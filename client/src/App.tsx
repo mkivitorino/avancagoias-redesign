@@ -8,6 +8,7 @@ import SubmitIdea from "@/pages/SubmitIdea";
 import Statistics from "@/pages/Statistics";
 import Admin from "@/pages/Admin";
 import Login from "@/pages/Login";
+import MyIdeas from "@/pages/MyIdeas";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -23,6 +24,7 @@ function Router() {
       <Route path={"/estatisticas"} component={Statistics} />
       <Route path={"/admin"} component={Admin} />
       <Route path={"/login"} component={Login} />
+      <Route path={"/minhas-ideias"} component={MyIdeas} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
