@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import { GOIAS_CITIES } from "@/data/goiasCities";
 
 const STATES = [
   "Acre","Alagoas","Amapá","Amazonas","Bahia","Ceará","Distrito Federal",
@@ -187,7 +188,14 @@ export default function Login() {
                   {/* Cidade */}
                   <div>
                     <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Cidade</label>
-                    <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Sua cidade" className={inputClass} />
+                    {livesInGoias === "sim" ? (
+                      <select value={city} onChange={(e) => setCity(e.target.value)} className={inputClass + " cursor-pointer"}>
+                        <option value="">Selecione sua cidade...</option>
+                        {GOIAS_CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    ) : (
+                      <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Sua cidade" className={inputClass} />
+                    )}
                   </div>
 
                   {/* Faixa Etária */}

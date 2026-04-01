@@ -11,6 +11,7 @@ import {
   Mail,
   MapPin,
   Heading,
+  ChevronDown,
   Layers,
   Send,
   RotateCcw,
@@ -18,6 +19,7 @@ import {
   Loader2,
   CheckCircle2,
 } from "lucide-react";
+import { GOIAS_CITIES } from "@/data/goiasCities";
 
 interface FormData {
   title: string;
@@ -581,20 +583,18 @@ export default function SubmitIdea() {
                     Sua Cidade <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <input
+                    <select
                       id="city"
                       name="city"
-                      type="text"
                       value={formData.city}
                       onChange={handleChange}
-                      placeholder="Ex: Goiânia"
-                      className="w-full pl-12 pr-4 py-3.5 rounded-xl transition-all"
+                      className="w-full pl-12 pr-10 py-3.5 rounded-xl appearance-none cursor-pointer transition-all"
                       style={{
                         border: "2px solid #E2E8F0",
                         background: "#fff",
                         outline: "none",
                         fontFamily: "inherit",
-                        color: "#1e293b",
+                        color: formData.city ? "#1e293b" : "#94A3B8",
                       }}
                       onFocus={(e) => {
                         e.target.style.borderColor = "#FFD700";
@@ -604,12 +604,18 @@ export default function SubmitIdea() {
                         e.target.style.borderColor = "#E2E8F0";
                         e.target.style.boxShadow = "none";
                       }}
-                    />
+                    >
+                      <option value="" disabled>Selecione sua cidade...</option>
+                      {GOIAS_CITIES.map((c) => (
+                        <option key={c} value={c} style={{ color: "#1e293b" }}>{c}</option>
+                      ))}
+                    </select>
                     <MapPin
                       size={16}
                       className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
                       style={{ color: "#94A3B8" }}
                     />
+                    <svg className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
                   </div>
                 </div>
               </div>
