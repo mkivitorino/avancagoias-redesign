@@ -1,80 +1,104 @@
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
+import bcrypt from "bcryptjs";
 import type { Express, Request, Response } from "express";
+import { nanoid } from "nanoid";
 import * as db from "../db";
 import { getSessionCookieOptions } from "./cookies";
-import { ENV } from "./env";
 import { sdk } from "./sdk";
 
 export function registerOAuthRoutes(app: Express) {
-  app.get("/api/oauth/callback", async (req: Request, res: Response) => {
-    const code = typeof req.query.code === "string" ? req.query.code : undefined;
+  app.post("/api/auth/register", async (req: Request, res: Response) => {
+    const { email, password, name } = req.body as {
+      email?: string;
+      password?: string;
+      name?: string;
+    };
 
-    if (!code) {
-      res.status(400).json({ error: "code is required" });
+    if (!email || !password || !name) {
+      res.status(400).json({ error: "email, password e name são obrigatórios" });
       return;
     }
 
     try {
-      // Exchange code for tokens with Google
-      const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code,
-          client_id: ENV.googleClientId,
-          client_secret: ENV.googleClientSecret,
-          redirect_uri: `${req.protocol}://${req.get("host")}/api/oauth/callback`,
-          grant_type: "authorization_code",
-        }),
-      });
-
-      if (!tokenRes.ok) {
-        const err = await tokenRes.text();
-        console.error("[OAuth] Token exchange failed:", err);
-        res.status(500).json({ error: "Token exchange failed" });
+      const existing = await db.getUserByEmail(email);
+      if (existing) {
+        res.status(409).json({ error: "Email já cadastrado" });
         return;
       }
 
-      const tokens = (await tokenRes.json()) as { access_token: string };
+      const passwordHash = await bcrypt.hash(password, 10);
+      const openId = nanoid();
 
-      // Fetch user info from Google
-      const userInfoRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-        headers: { Authorization: `Bearer ${tokens.access_token}` },
-      });
-
-      if (!userInfoRes.ok) {
-        res.status(500).json({ error: "Failed to fetch user info" });
-        return;
-      }
-
-      const userInfo = (await userInfoRes.json()) as {
-        sub: string;
-        name?: string;
-        email?: string;
-      };
-
-      // Upsert user using Google `sub` as openId
       await db.upsertUser({
-        openId: userInfo.sub,
-        name: userInfo.name || null,
-        email: userInfo.email ?? null,
-        loginMethod: "google",
+        openId,
+        name,
+        email,
+        loginMethod: "email",
         lastSignedIn: new Date(),
       });
 
-      // Create JWT session
-      const sessionToken = await sdk.createSessionToken(userInfo.sub, {
-        name: userInfo.name || "",
+      // Set passwordHash directly via raw query since upsertUser doesn't handle it
+      const dbInstance = await db.getDb();
+      if (dbInstance) {
+        const { users } = await import("../../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        await dbInstance.update(users).set({ passwordHash }).where(eq(users.openId, openId));
+      }
+
+      const sessionToken = await sdk.createSessionToken(openId, {
+        name,
         expiresInMs: ONE_YEAR_MS,
       });
 
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-
-      res.redirect(302, "/");
+      res.json({ ok: true });
     } catch (error) {
-      console.error("[OAuth] Callback failed", error);
-      res.status(500).json({ error: "OAuth callback failed" });
+      console.error("[Auth] Register failed", error);
+      res.status(500).json({ error: "Falha no registro" });
+    }
+  });
+
+  app.post("/api/auth/login", async (req: Request, res: Response) => {
+    const { email, password } = req.body as {
+      email?: string;
+      password?: string;
+    };
+
+    if (!email || !password) {
+      res.status(400).json({ error: "email e password são obrigatórios" });
+      return;
+    }
+
+    try {
+      const user = await db.getUserByEmail(email);
+      if (!user || !user.passwordHash) {
+        res.status(401).json({ error: "Email ou senha incorretos" });
+        return;
+      }
+
+      const valid = await bcrypt.compare(password, user.passwordHash);
+      if (!valid) {
+        res.status(401).json({ error: "Email ou senha incorretos" });
+        return;
+      }
+
+      await db.upsertUser({
+        openId: user.openId,
+        lastSignedIn: new Date(),
+      });
+
+      const sessionToken = await sdk.createSessionToken(user.openId, {
+        name: user.name || "",
+        expiresInMs: ONE_YEAR_MS,
+      });
+
+      const cookieOptions = getSessionCookieOptions(req);
+      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("[Auth] Login failed", error);
+      res.status(500).json({ error: "Falha no login" });
     }
   });
 }

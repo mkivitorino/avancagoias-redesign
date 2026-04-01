@@ -1,6 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { getLoginUrl } from "@/const";
+
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
@@ -59,13 +59,13 @@ export default function Header() {
               </Button>
             </>
           ) : (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => (window.location.href = getLoginUrl())}
-            >
-              Entrar
-            </Button>
+            <Link href="/login">
+              <a>
+                <Button variant="secondary" size="sm">
+                  Entrar
+                </Button>
+              </a>
+            </Link>
           )}
         </div>
 
@@ -138,17 +138,13 @@ export default function Header() {
                   </Button>
                 </>
               ) : (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => {
-                    window.location.href = getLoginUrl();
-                    setMobileMenuOpen(false);
-                  }}
-                >
-                  Entrar
-                </Button>
+                <Link href="/login">
+                  <a className="w-full" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="secondary" size="sm" className="w-full">
+                      Entrar
+                    </Button>
+                  </a>
+                </Link>
               )}
             </div>
           </nav>
