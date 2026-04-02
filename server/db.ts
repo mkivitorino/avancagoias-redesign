@@ -10,18 +10,16 @@ export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
       const url = new URL(process.env.DATABASE_URL);
-      const mysql2 = await import("mysql2/promise");
-      const pool = mysql2.createPool({
-        host: url.hostname,
-        port: parseInt(url.port) || 3306,
-        user: url.username,
-        password: url.pathname === "/" ? "" : decodeURIComponent(url.password),
-        database: url.pathname.slice(1),
-        charset: "utf8mb4",
-        collation: "utf8mb4_unicode_ci",
-        connectionLimit: 10,
+      _db = drizzle({
+        connection: {
+          host: url.hostname,
+          port: parseInt(url.port) || 3306,
+          user: decodeURIComponent(url.username),
+          password: decodeURIComponent(url.password),
+          database: url.pathname.slice(1),
+          charset: "utf8mb4",
+        },
       });
-      _db = drizzle(pool);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
