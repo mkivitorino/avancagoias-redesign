@@ -73,9 +73,7 @@ export default function Login() {
         <div className="relative z-10 text-center max-w-lg">
           <Link href="/">
             <a className="inline-block mb-12 hover:scale-105 transition-transform">
-              <span className="text-white font-black text-4xl tracking-tight">
-                GOIAS PODE <span style={{ color: "#FFD700" }}>+</span>
-              </span>
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310419663031401995/NGK4EhxCxiMqVsLqFwBT8y/Ativo21CORES_7f50b237.png" alt="Goiás Pode Mais" className="h-16 w-auto" />
             </a>
           </Link>
           <h1 className="text-4xl font-extrabold text-white mb-6 leading-tight">
@@ -97,9 +95,7 @@ export default function Login() {
 
         <div className="w-full max-w-md my-12">
           <div className="text-center lg:hidden mb-8 mt-6">
-            <span className="font-black text-3xl tracking-tight" style={{ color: "#001F4D" }}>
-              GOIAS PODE <span style={{ color: "#FFD700" }}>+</span>
-            </span>
+            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310419663031401995/NGK4EhxCxiMqVsLqFwBT8y/Ativo21CORES_7f50b237.png" alt="Goiás Pode Mais" className="h-14 w-auto mx-auto" />
           </div>
 
           <div className="p-8 sm:p-10" style={{ background: "#fff", borderRadius: "24px", boxShadow: "0 10px 40px rgba(0,31,77,0.08)", border: "1px solid rgba(0,0,0,0.03)" }}>
