@@ -9,17 +9,7 @@ let _db: ReturnType<typeof drizzle> | null = null;
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      const url = new URL(process.env.DATABASE_URL);
-      _db = drizzle({
-        connection: {
-          host: url.hostname,
-          port: parseInt(url.port) || 3306,
-          user: decodeURIComponent(url.username),
-          password: decodeURIComponent(url.password),
-          database: url.pathname.slice(1),
-          charset: "utf8mb4",
-        },
-      });
+      _db = drizzle(process.env.DATABASE_URL);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
