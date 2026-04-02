@@ -9,10 +9,12 @@ let _db: ReturnType<typeof drizzle> | null = null;
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      const url = process.env.DATABASE_URL.includes('?')
-        ? process.env.DATABASE_URL + '&charset=utf8mb4'
-        : process.env.DATABASE_URL + '?charset=utf8mb4';
-      _db = drizzle(url);
+      const mysql2 = await import("mysql2/promise");
+      const pool = mysql2.createPool({
+        uri: process.env.DATABASE_URL,
+        charset: "utf8mb4",
+      });
+      _db = drizzle(pool);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
