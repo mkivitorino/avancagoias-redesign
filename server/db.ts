@@ -13,6 +13,11 @@ export async function getDb() {
       const pool = mysql2.createPool({
         uri: process.env.DATABASE_URL,
         charset: "utf8mb4",
+        collation: "utf8mb4_unicode_ci",
+      });
+      // Force UTF-8 on every new connection
+      pool.on("connection", (conn: any) => {
+        conn.query("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
       });
       _db = drizzle(pool);
     } catch (error) {
