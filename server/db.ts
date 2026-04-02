@@ -9,15 +9,17 @@ let _db: ReturnType<typeof drizzle> | null = null;
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
+      const url = new URL(process.env.DATABASE_URL);
       const mysql2 = await import("mysql2/promise");
       const pool = mysql2.createPool({
-        uri: process.env.DATABASE_URL,
+        host: url.hostname,
+        port: parseInt(url.port) || 3306,
+        user: url.username,
+        password: url.pathname === "/" ? "" : decodeURIComponent(url.password),
+        database: url.pathname.slice(1),
         charset: "utf8mb4",
         collation: "utf8mb4_unicode_ci",
-      });
-      // Force UTF-8 on every new connection
-      pool.on("connection", (conn: any) => {
-        conn.query("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
+        connectionLimit: 10,
       });
       _db = drizzle(pool);
     } catch (error) {
