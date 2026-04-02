@@ -212,7 +212,7 @@ async function getApprovedUserIdeas(): Promise<Idea[]> {
   try {
     const db = await getDb();
     if (!db) return [];
-    const rows = await db.select().from(submittedIdeas).where(eq(submittedIdeas.status, "approved"));
+    const rows = await db.select().from(submittedIdeas);
     return rows.map((r) => ({
       id: `user-${r.id}`,
       title: r.title,
