@@ -125,6 +125,7 @@ const axes = [
 export default function Home() {
   const { isAuthenticated } = useAuth();
   const { data: topIdeas, isLoading: loadingTopIdeas } = trpc.ideas.topIdeas.useQuery();
+  const { data: stats } = trpc.ideas.stats.useQuery();
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#F3F6F8", color: "#1e293b" }}>
       <Header />
@@ -216,9 +217,9 @@ export default function Home() {
           <div className="container mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {[
-                { value: '11', label: 'Eixos Temáticos', yellow: false },
-                { value: '179', label: 'Ideias', yellow: true },
-                { value: '246', label: 'Municípios', yellow: false },
+                { value: String(stats?.ideasByAxis?.length ?? 11), label: 'Eixos Temáticos', yellow: false },
+                { value: String(stats?.totalIdeas ?? '...'), label: 'Ideias', yellow: true },
+                { value: String(stats?.totalCities ?? 246), label: 'Municípios', yellow: false },
                 { value: '7M+', label: 'Goianos', yellow: true },
               ].map((stat) => (
                 <div
