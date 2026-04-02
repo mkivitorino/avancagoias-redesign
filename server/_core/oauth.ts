@@ -9,6 +9,18 @@ import { getSessionCookieOptions } from "./cookies";
 import { sdk } from "./sdk";
 
 export function registerOAuthRoutes(app: Express) {
+  // Debug endpoint to test encoding
+  app.post("/api/debug/echo", (req: Request, res: Response) => {
+    const body = req.body;
+    const axis = body?.axis || "";
+    const buf = Buffer.from(axis, "utf8");
+    res.json({
+      axis,
+      hexBytes: buf.toString("hex"),
+      length: axis.length,
+      byteLength: buf.length,
+    });
+  });
   app.post("/api/auth/register", async (req: Request, res: Response) => {
     const { email, password, name, gender, phone, livesInGoias, state, city, ageRange } = req.body as Record<string, string | undefined>;
 
