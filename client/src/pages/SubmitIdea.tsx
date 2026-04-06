@@ -120,6 +120,10 @@ export default function SubmitIdea() {
       toast.error("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
+    if (formData.description.trim().length < 20) {
+      toast.error("A descrição deve ter pelo menos 20 caracteres.");
+      return;
+    }
     setIsSubmitting(true);
     try {
       await createIdea.mutateAsync({
@@ -444,6 +448,8 @@ export default function SubmitIdea() {
                   id="description"
                   name="description"
                   rows={6}
+                  required
+                  minLength={20}
                   maxLength={1000}
                   value={formData.description}
                   onChange={handleChange}
@@ -467,7 +473,10 @@ export default function SubmitIdea() {
                     e.target.style.boxShadow = "none";
                   }}
                 />
-                <div className="flex justify-end mt-1">
+                <div className="flex justify-between mt-1">
+                  <span className={`text-xs font-medium ${formData.description.length > 0 && formData.description.length < 20 ? "text-red-500" : "text-gray-400"}`}>
+                    {formData.description.length > 0 && formData.description.length < 20 ? `Mínimo 20 caracteres (faltam ${20 - formData.description.length})` : ""}
+                  </span>
                   <span className="text-xs text-gray-400 font-medium">
                     {formData.description.length}/1000 caracteres
                   </span>
