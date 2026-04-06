@@ -117,7 +117,7 @@ export const adminRouter = router({
           if (idea) {
             const [author] = await db.select().from(users).where(eq(users.id, idea.userId)).limit(1);
             if (author?.email) {
-              sendIdeaApprovedEmail(author.email, author.name || "Cidadão", idea.title);
+              sendIdeaApprovedEmail(author.email, author.name || "Cidadão", idea.title, idea.id);
             }
           }
         } catch (e) {
