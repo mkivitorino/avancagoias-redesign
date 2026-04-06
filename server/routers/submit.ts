@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { protectedProcedure, adminProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { submittedIdeas } from "../../drizzle/schema";
-import { eq, desc, and } from "drizzle-orm";
+import { submittedIdeas, users } from "../../drizzle/schema";
+import { eq, desc, and, like, or } from "drizzle-orm";
+import { sendIdeaApprovedEmail } from "../services/emailService";
 
 export const submitRouter = router({
   /**
@@ -109,6 +110,21 @@ export const adminRouter = router({
         })
         .where(eq(submittedIdeas.id, input.ideaId));
 
+      // Send email on approval
+      if (input.status === "approved") {
+        try {
+          const [idea] = await db.select().from(submittedIdeas).where(eq(submittedIdeas.id, input.ideaId)).limit(1);
+          if (idea) {
+            const [author] = await db.select().from(users).where(eq(users.id, idea.userId)).limit(1);
+            if (author?.email) {
+              sendIdeaApprovedEmail(author.email, author.name || "Cidadão", idea.title);
+            }
+          }
+        } catch (e) {
+          console.error("[Admin] Failed to send approval email:", e);
+        }
+      }
+
       return { success: true };
     }),
 
@@ -128,4 +144,36 @@ export const adminRouter = router({
       rejected: all.filter((i) => i.status === "rejected").length,
     };
   }),
+
+  listUsers: adminProcedure
+    .input(z.object({ search: z.string().optional() }).optional())
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) return [];
+      const q = input?.search?.trim();
+      if (q) {
+        const pattern = `%${q}%`;
+        return db.select({
+          id: users.id, name: users.name, email: users.email, role: users.role,
+          city: users.city, createdAt: users.createdAt,
+        }).from(users).where(or(like(users.name, pattern), like(users.email, pattern))).orderBy(desc(users.createdAt));
+      }
+      return db.select({
+        id: users.id, name: users.name, email: users.email, role: users.role,
+        city: users.city, createdAt: users.createdAt,
+      }).from(users).orderBy(desc(users.createdAt));
+    }),
+
+  setUserRole: adminProcedure
+    .input(z.object({
+      userId: z.number().int().positive(),
+      role: z.enum(["user", "admin"]),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      if (input.userId === ctx.user.id) throw new Error("Você não pode alterar seu próprio cargo");
+      const db = await getDb();
+      if (!db) throw new Error("Banco indisponível");
+      await db.update(users).set({ role: input.role }).where(eq(users.id, input.userId));
+      return { success: true };
+    }),
 });

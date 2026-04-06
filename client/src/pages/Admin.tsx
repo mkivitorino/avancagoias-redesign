@@ -10,15 +10,20 @@ import {
   Clock,
   Layers,
   User,
+  Users,
   Calendar,
   Loader2,
   ShieldAlert,
   BarChart3,
   ChevronDown,
   ChevronUp,
+  Search,
+  Shield,
+  MapPin,
 } from "lucide-react";
 
 type StatusFilter = "pending" | "approved" | "rejected" | "all";
+type AdminTab = "ideas" | "users";
 
 const STATUS_LABELS: Record<string, { label: string; color: string; bg: string; icon: React.ReactNode }> = {
   pending: { label: "Pendente", color: "#b45309", bg: "#fffbeb", icon: <Clock size={14} /> },
@@ -28,9 +33,11 @@ const STATUS_LABELS: Record<string, { label: string; color: string; bg: string; 
 
 export default function Admin() {
   const { user, isAuthenticated, loading } = useAuth();
+  const [activeTab, setActiveTab] = useState<AdminTab>("ideas");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("pending");
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [rejectNotes, setRejectNotes] = useState<Record<number, string>>({});
+  const [userSearch, setUserSearch] = useState("");
 
   const { data: ideas, isLoading, refetch } = trpc.admin.ideas.useQuery(
     { status: statusFilter },
@@ -39,6 +46,16 @@ export default function Admin() {
 
   const { data: stats } = trpc.admin.stats.useQuery(undefined, {
     enabled: isAuthenticated && user?.role === "admin",
+  });
+
+  const { data: usersList, isLoading: loadingUsers, refetch: refetchUsers } = trpc.admin.listUsers.useQuery(
+    { search: userSearch || undefined },
+    { enabled: isAuthenticated && user?.role === "admin" && activeTab === "users" }
+  );
+
+  const setUserRole = trpc.admin.setUserRole.useMutation({
+    onSuccess: () => { toast.success("Cargo atualizado!"); refetchUsers(); },
+    onError: (err) => toast.error(err.message),
   });
 
   const updateStatus = trpc.admin.updateStatus.useMutation({
@@ -108,13 +125,113 @@ export default function Admin() {
       >
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl font-extrabold mb-2">
-            Painel de <span style={{ color: "#FFD700" }}>Moderação</span>
+            Painel de <span style={{ color: "#FFD700" }}>Administração</span>
           </h1>
-          <p className="text-blue-200">Gerencie as ideias enviadas pelos cidadãos</p>
+          <p className="text-blue-200 mb-6">Gerencie ideias e usuários da plataforma</p>
+          <div className="flex justify-center gap-2">
+            {([
+              { key: "ideas" as AdminTab, label: "Ideias", icon: <Layers size={16} /> },
+              { key: "users" as AdminTab, label: "Usuários", icon: <Users size={16} /> },
+            ]).map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                style={{
+                  background: activeTab === tab.key ? "#FFD700" : "rgba(255,255,255,0.1)",
+                  color: activeTab === tab.key ? "#001F4D" : "#bfdbfe",
+                }}
+              >
+                {tab.icon} {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 
       <main className="flex-grow container mx-auto px-4 -mt-10 mb-20 relative z-10">
+
+        {/* ════ ABA USUÁRIOS ════ */}
+        {activeTab === "users" && (
+          <div className="max-w-4xl mx-auto">
+            <div className="p-4 rounded-2xl mb-6" style={{ background: "#fff", boxShadow: "0 4px 15px rgba(0,0,0,0.05)" }}>
+              <div className="relative">
+                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Buscar por nome ou email..."
+                  value={userSearch}
+                  onChange={(e) => setUserSearch(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:border-yellow-400"
+                />
+              </div>
+            </div>
+
+            {loadingUsers ? (
+              <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin" size={32} style={{ color: "#001F4D" }} /></div>
+            ) : !usersList?.length ? (
+              <div className="text-center py-16 rounded-2xl" style={{ background: "#fff", boxShadow: "0 4px 15px rgba(0,0,0,0.05)" }}>
+                <Users size={40} className="mx-auto mb-4 text-gray-300" />
+                <p className="text-gray-400">Nenhum usuário encontrado.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {usersList.map((u) => (
+                  <div
+                    key={u.id}
+                    className="flex items-center justify-between p-4 rounded-2xl"
+                    style={{ background: "#fff", boxShadow: "0 2px 10px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.04)" }}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
+                        style={{ background: u.role === "admin" ? "#001F4D" : "#94a3b8" }}
+                      >
+                        {(u.name || "?")[0].toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-sm truncate" style={{ color: "#001F4D" }}>{u.name || "Sem nome"}</p>
+                          {u.role === "admin" && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: "#eff6ff", color: "#001F4D" }}>
+                              <Shield size={10} /> ADMIN
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-400 truncate">{u.email}</p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          {u.city && <span className="text-[10px] text-gray-400 flex items-center gap-0.5"><MapPin size={9} />{u.city}</span>}
+                          <span className="text-[10px] text-gray-400">{u.createdAt ? new Date(u.createdAt).toLocaleDateString("pt-BR") : ""}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="shrink-0 ml-3">
+                      {u.id !== user?.id ? (
+                        <button
+                          onClick={() => setUserRole.mutate({ userId: u.id, role: u.role === "admin" ? "user" : "admin" })}
+                          disabled={setUserRole.isPending}
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
+                          style={{
+                            background: u.role === "admin" ? "#fef2f2" : "#f0fdf4",
+                            color: u.role === "admin" ? "#dc2626" : "#16a34a",
+                            border: u.role === "admin" ? "1px solid #fecaca" : "1px solid #bbf7d0",
+                          }}
+                        >
+                          {u.role === "admin" ? "Remover Admin" : "Tornar Admin"}
+                        </button>
+                      ) : (
+                        <span className="text-xs text-gray-400 italic">Você</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ════ ABA IDEIAS ════ */}
+        {activeTab === "ideas" && <>
         {/* Cards de estatísticas */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -290,6 +407,7 @@ export default function Admin() {
             })}
           </div>
         )}
+        </>}
       </main>
 
       <Footer />
