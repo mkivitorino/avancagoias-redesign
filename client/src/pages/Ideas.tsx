@@ -119,10 +119,14 @@ export default function Ideas() {
   });
 
   const rawIdeas = ideasData?.ideas || [];
+  const parseDate = (d: string) => {
+    const [day, month, year] = d.split("/");
+    return new Date(`${year}-${month}-${day}`).getTime() || 0;
+  };
   const ideas = [...rawIdeas].sort((a, b) => {
     if (sortOrder === "votes") return (b.votes_up - b.votes_down) - (a.votes_up - a.votes_down);
-    if (sortOrder === "oldest") return a.id.localeCompare(b.id);
-    return b.id.localeCompare(a.id); // recent = default
+    if (sortOrder === "oldest") return parseDate(a.date) - parseDate(b.date);
+    return parseDate(b.date) - parseDate(a.date); // recent = default
   });
   const total = ideasData?.total || 0;
   const hasMore = ideasData?.hasMore || false;
